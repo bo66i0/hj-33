@@ -129,9 +129,10 @@ class Menu {
               .then(res => res.json())
               .then(data => {
                 canvas.setImageSrc(data.url);
-                let ws = new WebSocket(`wss:neto-api.herokuapp.com/pic/${ data.id }`);
+                let url = `wss:neto-api.herokuapp.com/pic/${ data.id }`
+                let ws = new WebSocket(url);
                 ws.addEventListener('open', event => console.log('hui'));
-                ws.addEventListener('message', event => mask.wsEventMessage(event, ws));
+                ws.addEventListener('message', event => mask.wsEventMessage(event, ws, url));
                 ws.addEventListener('close', event => console.log('zakrito'));
                 webSocket = ws;
               })
@@ -327,22 +328,22 @@ class Mask {
     this.canvas.height = this.img.height;
   }
 
-  reOpenWs(event, ws) {
+  reOpenWs(event, ws, url) {
     ws.close();
-    ws = new WebSocket(`wss:neto-api.herokuapp.com/pic/${ JSON.parse(event.data).id }`);
+    ws = new WebSocket(url);
     ws.addEventListener('open', event => console.log('hui'));
     ws.addEventListener('message', mask.newWsEventMessage);
-    ws.addEventListener('error', (event) => console.log(event.data.error));
+    ws.addEventListener('error', (event) => console.log('errorsuka'));
     ws.addEventListener('close', event => console.log('zakrito'));
     webSocket = ws;
   }
 
-  wsEventMessage(event, ws) {
-    console.log(JSON.parse(event.data).event);
+  wsEventMessage(event, ws, url) {
+    console.log(JSON.parse(event.data));
     if (JSON.parse(event.data).event === 'mask') {
       mask.setMaskSrc(JSON.parse(event.data).url);
       mask.pointsList.splice(0, mask.pointsToDeleteAmount);
-      mask.reOpenWs(event, ws)
+      mask.reOpenWs(event, ws, url)
     }
   }
 
@@ -390,7 +391,7 @@ function updateMaskImage() {
       }
     }
 
-  }, 2000)
+  }, 5000)
 }
 
 updateMaskImage();
