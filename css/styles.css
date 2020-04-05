@@ -76,10 +76,6 @@ body {
 }
 
 .current-image {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: block;
   box-shadow: 0.1rem 0.17rem 1rem #000000;
   z-index: 0;
